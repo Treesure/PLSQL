@@ -1,0 +1,54 @@
+CREATE OR REPLACE PROCEDURE INSERE_TIPOVEICULO (I_CD_TIPO    IN NUMBER,
+                                                I_DS_TIPO    IN VARCHAR2,
+                                                I_QT_PORTAS  IN NUMBER,
+                                                I_QT_RODAS   IN NUMBER,
+                                                I_DT_RECORD  IN DATE DEFAULT SYSDATE,
+                                                O_MENSAGEM   OUT VARCHAR2) IS
+
+   V_COUNT         NUMBER;
+   E_GERAL         EXCEPTION;
+
+BEGIN
+
+
+   BEGIN
+     SELECT COUNT(*)
+       INTO V_COUNT
+       FROM TIPOVEICULO
+      WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+   EXCEPTION
+     WHEN OTHERS THEN
+          V_COUNT := 0;
+   END;
+
+   IF NVL(V_COUNT,0) = 0 THEN
+
+     INSERT INTO TIPOVEICULO(CD_TIPO,
+                             DS_TIPO,
+                             QT_PORTAS,
+                             QT_RODAS,
+                             DT_RECORD)
+                       VALUES
+                       (I_CD_TIPO  ,
+                        I_DS_TIPO,
+                        I_QT_PORTAS,
+                        I_QT_RODAS ,
+                        I_DT_RECORD);
+
+   ELSE
+      RAISE E_GERAL;
+   END IF;
+
+   COMMIT;
+   O_MENSAGEM := 'Tipo de veiculo cadastrado com sucesso!';
+
+EXCEPTION
+     WHEN E_GERAL THEN
+       ROLLBACK;
+      O_MENSAGEM := '[INSERE_TIPOVEICULO]: Já existe um tipo de veiculo com o código '||I_CD_TIPO||' cadastrado. Verifique.';
+
+     WHEN OTHERS THEN
+        ROLLBACK;
+        O_MENSAGEM := '[INSERE_TIPOVEICULO]: Ocorreu um erro ao inserir o CARRO.'||SQLERRM;
+
+END INSERE_CARRO;
