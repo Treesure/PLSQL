@@ -1,0 +1,36 @@
+-- Create table
+create table TIPOVEICULO
+(
+  cd_tipo   NUMBER(3) not null,
+  ds_tipo   VARCHAR2(20),
+  qt_portas NUMBER(2),
+  qt_rodas  NUMBER(2),
+  dt_record DATE
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table TIPOVEICULO
+  add constraint PKTIPOVEICULO primary key (CD_TIPO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
