@@ -1,0 +1,104 @@
+CREATE OR REPLACE PROCEDURE INSERE_CARRO (I_NR_PLACA   IN VARCHAR2,
+                                          I_DS_COR     IN VARCHAR2,
+                                          I_DS_MARCA   IN VARCHAR2,
+                                          I_DT_ANO     IN NUMBER,
+                                          I_VL_KM      IN NUMBER,
+                                          I_CD_TIPO    IN NUMBER,
+                                          I_NM_MODELO  IN VARCHAR2,
+                                          I_DT_RECORD  IN DATE DEFAULT SYSDATE,
+                                          O_MENSAGEM   OUT VARCHAR2) IS
+   /*V_NR_PLACA      VARCHAR2(7);
+   V_DS_COR        VARCHAR2(20);
+   V_DS_MARCA      VARCHAR2(30);
+   V_DT_ANO        NUMBER(4);
+   V_VL_KM         NUMBER(7);
+   V_CD_TIPO       NUMBER(3);
+   V_DT_RECORD     DATE  ; 
+   V_NM_MODELO     VARCHAR2(20);*/
+   V_COUNT         NUMBER;
+   V_COUNT_TP      NUMBER;
+   E_GERAL         EXCEPTION; 
+
+BEGIN
+  /*V_NR_PLACA   := 'DDK7878';
+   V_DS_COR     := 'Branco';
+   V_DS_MARCA   := 'Fiat';
+   V_DT_ANO     := 2024;
+   V_VL_KM      := 0;
+   V_CD_TIPO    := 1;
+   V_NM_MODELO  := NULL;
+   V_DT_RECORD  := SYSDATE;*/
+   
+   /*VALIDAÇÃO DE TIPO DE VEICULO*/
+   BEGIN
+     SELECT COUNT(*)
+       INTO V_COUNT_TP
+       FROM TIPOVEICULO
+      WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+   EXCEPTION
+     WHEN OTHERS THEN
+         V_COUNT_TP := 0;
+         
+   END;
+   
+   IF NVL(V_COUNT_TP,0) <= 0 THEN
+     O_MENSAGEM := 'O tipo de veiculo '||I_CD_TIPO||' não está cadastrado. Verifique';
+     RAISE E_GERAL;
+   END IF;
+   
+   BEGIN
+     SELECT COUNT(*) 
+       INTO V_COUNT
+       FROM CARRO
+      WHERE CARRO.NR_PLACA = I_NR_PLACA;
+   EXCEPTION
+     WHEN OTHERS THEN
+          V_COUNT := 0;
+   END;
+   
+   IF NVL(I_DT_ANO,0) > 2025 THEN
+      O_MENSAGEM := 'O ano do carro não pode ser superior ao ano seguinte ao atual!';
+      RAISE E_GERAL;
+   END IF;
+   IF NVL(V_COUNT,0) = 0 THEN
+     BEGIN
+       INSERT INTO CARRO(NR_PLACA,
+                         DS_COR,
+                         DS_MARCA,
+                         DT_ANO,
+                         VL_KM,
+                         CD_TIPO,
+                         NM_MODELO,
+                         DT_RECORD)
+                         VALUES
+                         (I_NR_PLACA,
+                          I_DS_COR,
+                          I_DS_MARCA,
+                          I_DT_ANO,
+                          I_VL_KM,
+                          I_CD_TIPO,
+                          I_NM_MODELO,
+                          I_DT_RECORD);
+        EXCEPTION
+          WHEN DUP_VAL_ON_INDEX THEN
+               O_MENSAGEM := 'Já existe um veiculo com a placa '||I_NR_PLACA||' cadastrado. Verifique.';
+               RAISE E_GERAL;
+        END;
+   ELSE
+     O_MENSAGEM := 'Já existe um veiculo com a placa '||I_NR_PLACA||' cadastrado. Verifique.';
+      RAISE E_GERAL;
+   END IF;
+   
+   COMMIT;
+   O_MENSAGEM := 'Carro cadastrado com sucesso!';
+
+EXCEPTION
+     WHEN E_GERAL THEN
+       ROLLBACK;   
+      O_MENSAGEM := '[INSERE_CARRO]: '||O_MENSAGEM;  
+        
+     WHEN OTHERS THEN
+        ROLLBACK;
+        O_MENSAGEM := '[INSERE_CARRO]: Ocorreu um erro ao inserir o CARRO.'||SQLERRM;
+        
+END INSERE_CARRO;
