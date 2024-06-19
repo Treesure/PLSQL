@@ -1,11 +1,14 @@
 -- Create table
-create table TIPOVEICULO
+create table CARRO
 (
+  nr_placa  VARCHAR2(7) not null,
+  ds_cor    VARCHAR2(20) not null,
+  ds_marca  VARCHAR2(30) not null,
+  dt_ano    NUMBER(4) not null,
+  vl_km     NUMBER(7) not null,
   cd_tipo   NUMBER(3) not null,
-  ds_tipo   VARCHAR2(20),
-  qt_portas NUMBER(2),
-  qt_rodas  NUMBER(2),
-  dt_record DATE
+  dt_record DATE,
+  nm_modelo VARCHAR2(20)
 )
 tablespace SYSTEM
   pctfree 10
@@ -20,8 +23,8 @@ tablespace SYSTEM
     maxextents unlimited
   );
 -- Create/Recreate primary, unique and foreign key constraints 
-alter table TIPOVEICULO
-  add constraint PKTIPOVEICULO primary key (CD_TIPO)
+alter table CARRO
+  add constraint PKCARRO primary key (NR_PLACA)
   using index 
   tablespace SYSTEM
   pctfree 10
@@ -34,3 +37,6 @@ alter table TIPOVEICULO
     minextents 1
     maxextents unlimited
   );
+alter table CARRO
+  add constraint FKCARRO_TIPOVEICULO foreign key (CD_TIPO)
+  references TIPOVEICULO (CD_TIPO);
