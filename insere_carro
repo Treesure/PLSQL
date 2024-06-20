@@ -7,27 +7,12 @@ CREATE OR REPLACE PROCEDURE INSERE_CARRO (I_NR_PLACA   IN VARCHAR2,
                                           I_NM_MODELO  IN VARCHAR2,
                                           I_DT_RECORD  IN DATE DEFAULT SYSDATE,
                                           O_MENSAGEM   OUT VARCHAR2) IS
-   /*V_NR_PLACA      VARCHAR2(7);
-   V_DS_COR        VARCHAR2(20);
-   V_DS_MARCA      VARCHAR2(30);
-   V_DT_ANO        NUMBER(4);
-   V_VL_KM         NUMBER(7);
-   V_CD_TIPO       NUMBER(3);
-   V_DT_RECORD     DATE  ; 
-   V_NM_MODELO     VARCHAR2(20);*/
+   
    V_COUNT         NUMBER;
    V_COUNT_TP      NUMBER;
    E_GERAL         EXCEPTION; 
 
 BEGIN
-  /*V_NR_PLACA   := 'DDK7878';
-   V_DS_COR     := 'Branco';
-   V_DS_MARCA   := 'Fiat';
-   V_DT_ANO     := 2024;
-   V_VL_KM      := 0;
-   V_CD_TIPO    := 1;
-   V_NM_MODELO  := NULL;
-   V_DT_RECORD  := SYSDATE;*/
    
    /*VALIDAÇÃO DE TIPO DE VEICULO*/
    BEGIN
