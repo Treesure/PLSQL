@@ -1,0 +1,25 @@
+CREATE OR REPLACE PACKAGE PACK_CARRO IS
+
+  PROCEDURE EXCLUI_TIPOVEICULO(I_CD_TIPO  IN NUMBER,
+                               O_MENSAGEM OUT VARCHAR2);
+
+  PROCEDURE EXCLUI_CARRO(I_NR_PLACA IN VARCHAR2, O_MENSAGEM OUT VARCHAR2);
+
+  PROCEDURE INSERE_CARRO(I_NR_PLACA  IN VARCHAR2,
+                         I_DS_COR    IN VARCHAR2,
+                         I_DS_MARCA  IN VARCHAR2,
+                         I_DT_ANO    IN NUMBER,
+                         I_VL_KM     IN NUMBER,
+                         I_CD_TIPO   IN NUMBER,
+                         I_NM_MODELO IN VARCHAR2,
+                         I_DT_RECORD IN DATE DEFAULT SYSDATE,
+                         O_MENSAGEM  OUT VARCHAR2);
+
+  PROCEDURE INSERE_TIPOVEICULO(I_CD_TIPO   IN NUMBER,
+                               I_DS_TIPO   IN VARCHAR2,
+                               I_QT_PORTAS IN NUMBER,
+                               I_QT_RODAS  IN NUMBER,
+                               I_DT_RECORD IN DATE DEFAULT SYSDATE,
+                               O_MENSAGEM  OUT VARCHAR2);
+
+END PACK_CARRO;
