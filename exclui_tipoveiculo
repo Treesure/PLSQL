@@ -1,0 +1,56 @@
+CREATE OR REPLACE PROCEDURE EXCLUI_TIPOVEICULO(I_CD_TIPO  IN NUMBER,
+                                               O_MENSAGEM OUT VARCHAR2) IS
+
+   V_COUNT     NUMBER;
+   E_GERAL     EXCEPTION;
+
+BEGIN
+   /*VALIDAÇÃO DE EXISTÊNCIA DO TIPO DE VEICULO*/
+   BEGIN
+     SELECT COUNT(*) 
+       INTO V_COUNT
+       FROM TIPOVEICULO
+      WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;  
+   EXCEPTION
+     WHEN OTHERS THEN
+       V_COUNT := 0;
+   END;
+   
+   IF V_COUNT = 0 THEN
+      O_MENSAGEM := 'Tipo de veiculo não está cadastrado!';
+      RAISE E_GERAL;
+   END IF;
+   /*VALIDAÇÃO DE EXISTÊNCIA DO TIPO DE VEICULO NA TABELA CARRO
+     PARA EVITAR ERRO DE REGISTRO FILHO*/
+   BEGIN
+     SELECT COUNT(*)
+       INTO V_COUNT
+       FROM CARRO
+      WHERE CARRO.CD_TIPO = I_CD_TIPO;
+   EXCEPTION
+     WHEN OTHERS THEN
+       V_COUNT := 0;
+   END;
+   
+   IF V_COUNT > 0 THEN
+     O_MENSAGEM := 'Não é possível excluir o tipo de veiculo, pois o mesmo
+                    está sendo utilizado na tabela CARRO!';
+     RAISE E_GERAL;
+   END IF;
+   
+   DELETE 
+     FROM TIPOVEICULO
+    WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+    
+    O_MENSAGEM := 'Tipo de veiculo excluido com sucesso.';
+    COMMIT;
+
+EXCEPTION
+  WHEN E_GERAL THEN
+    O_MENSAGEM := '[EXCLUI_TIPOVEICULO]: '||O_MENSAGEM;
+    ROLLBACK;
+  WHEN OTHERS THEN
+    O_MENSAGEM := '[EXCLUI_TIPOVEICULO]: '||SQLERRM;
+    ROLLBACK;
+   
+END EXCLUI_TIPOVEICULO;
