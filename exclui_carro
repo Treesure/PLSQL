@@ -1,0 +1,39 @@
+CREATE OR REPLACE PROCEDURE EXCLUI_CARRO(I_NR_PLACA IN  VARCHAR2,
+                                         O_MENSAGEM OUT VARCHAR2) IS
+   
+   V_COUNT     NUMBER;
+   E_GERAL     EXCEPTION;
+
+BEGIN
+  BEGIN
+    SELECT COUNT(*)
+      INTO V_COUNT
+      FROM CARRO
+     WHERE CARRO.NR_PLACA = I_NR_PLACA;
+  EXCEPTION
+    WHEN OTHERS THEN
+      V_COUNT := 0;
+  END;
+  
+  IF V_COUNT = 0 THEN
+    RAISE E_GERAL;
+  END IF;
+  
+  DELETE 
+    FROM CARRO
+   WHERE CARRO.NR_PLACA = I_NR_PLACA;
+   
+   O_MENSAGEM := 'Placa '||I_NR_PLACA||' excluida com sucesso!.';
+   
+   COMMIT;
+   
+EXCEPTION
+  WHEN E_GERAL THEN
+      O_MENSAGEM := 'Placa '||I_NR_PLACA||' não está cadastrada!';
+      ROLLBACK;
+  WHEN OTHERS THEN
+     ROLLBACK;
+     O_MENSAGEM := 'Erro ao excluir placa '||I_NR_PLACA||
+                    '. - '||SQLERRM; 
+                    
+END EXCLUI_CARRO;
