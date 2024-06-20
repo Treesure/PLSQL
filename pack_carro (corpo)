@@ -1,0 +1,294 @@
+CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
+ 
+  PROCEDURE EXCLUI_TIPOVEICULO(I_CD_TIPO  IN NUMBER,
+                               O_MENSAGEM OUT VARCHAR2) IS
+    E_GERAL    EXCEPTION;
+  V_COUNT    NUMBER;  
+
+  
+  BEGIN
+    /*VALIDAÇÃO DE EXISTÊNCIA DO TIPO DE VEICULO*/
+    BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT
+        FROM TIPOVEICULO
+       WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT := 0;
+    END;
+  
+    IF V_COUNT = 0 THEN
+      O_MENSAGEM := 'Tipo de veiculo não está cadastrado!';
+      RAISE E_GERAL;
+    END IF;
+    /*VALIDAÇÃO DE EXISTÊNCIA DO TIPO DE VEICULO NA TABELA CARRO
+    PARA EVITAR ERRO DE REGISTRO FILHO*/
+    BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT
+        FROM CARRO
+       WHERE CARRO.CD_TIPO = I_CD_TIPO;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT := 0;
+    END;
+  
+    IF V_COUNT > 0 THEN
+      O_MENSAGEM := 'Não é possível excluir o tipo de veiculo, pois o mesmo
+                      está sendo utilizado na tabela CARRO!';
+      RAISE E_GERAL;
+    END IF;
+  
+    DELETE FROM TIPOVEICULO WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+  
+    O_MENSAGEM := 'Tipo de veiculo excluido com sucesso.';
+    COMMIT;
+  
+  EXCEPTION
+    WHEN E_GERAL THEN
+      O_MENSAGEM := '[EXCLUI_TIPOVEICULO]: ' || O_MENSAGEM;
+      ROLLBACK;
+    WHEN OTHERS THEN
+      O_MENSAGEM := '[EXCLUI_TIPOVEICULO]: ' || SQLERRM;
+      ROLLBACK;
+    
+  END EXCLUI_TIPOVEICULO;
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  PROCEDURE EXCLUI_CARRO(I_NR_PLACA IN VARCHAR2, O_MENSAGEM OUT VARCHAR2) IS
+  
+    V_COUNT NUMBER;
+    E_GERAL EXCEPTION;
+  
+  BEGIN
+    BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT
+        FROM CARRO
+       WHERE CARRO.NR_PLACA = I_NR_PLACA;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT := 0;
+    END;
+  
+    IF V_COUNT = 0 THEN
+      RAISE E_GERAL;
+    END IF;
+  
+    DELETE FROM CARRO WHERE CARRO.NR_PLACA = I_NR_PLACA;
+  
+    O_MENSAGEM := 'Placa ' || I_NR_PLACA || ' excluida com sucesso!.';
+  
+    COMMIT;
+  
+  EXCEPTION
+    WHEN E_GERAL THEN
+      O_MENSAGEM := 'Placa ' || I_NR_PLACA || ' não está cadastrada!';
+      ROLLBACK;
+    WHEN OTHERS THEN
+      ROLLBACK;
+      O_MENSAGEM := 'Erro ao excluir placa ' || I_NR_PLACA || '. - ' ||
+                    SQLERRM;
+    
+  END EXCLUI_CARRO;
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  PROCEDURE INSERE_CARRO(I_NR_PLACA  IN VARCHAR2,
+                         I_DS_COR    IN VARCHAR2,
+                         I_DS_MARCA  IN VARCHAR2,
+                         I_DT_ANO    IN NUMBER,
+                         I_VL_KM     IN NUMBER,
+                         I_CD_TIPO   IN NUMBER,
+                         I_NM_MODELO IN VARCHAR2,
+                         I_DT_RECORD IN DATE DEFAULT SYSDATE,
+                         O_MENSAGEM  OUT VARCHAR2) IS
+  
+    E_GERAL    EXCEPTION;
+    --V_COUNT    NUMBER;
+    V_COUNT_TP NUMBER;
+    
+  
+  BEGIN
+    /*VALIDAÇÃO COR*/
+    IF I_DS_COR IS NULL THEN
+      O_MENSAGEM := 'A cor do veiculo precisa ser preenchida.';
+      RAISE E_GERAL;
+    END IF;
+    
+    /*VALIDAÇÃO MARCA*/
+    IF I_DS_MARCA IS NULL THEN
+      O_MENSAGEM := 'A marca do veiculo precisa ser preenchida.';
+      RAISE E_GERAL;
+    END IF;
+    
+    /*VALIDAÇÃO ANO*/
+    IF I_DT_ANO IS NULL THEN
+      O_MENSAGEM := 'O ano do veiculo precisa ser preenchido.';
+      RAISE E_GERAL;
+    END IF;
+    
+    /*VALIDAÇÃO TIpo de Veiculo*/
+    IF I_CD_TIPO IS NULL THEN
+      O_MENSAGEM := 'O tipo do veiculo precisa ser preenchido.';
+      RAISE E_GERAL;
+    END IF;
+    
+    /*VALIDAÇÃO TIpo de Veiculo*/
+    IF I_NM_MODELO IS NULL THEN
+      O_MENSAGEM := 'O modelo do veiculo precisa ser preenchido.';
+      RAISE E_GERAL;
+    END IF;
+    
+    /*VALIDAÇÃO DE TIPO DE VEICULO*/
+    BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT_TP
+        FROM TIPOVEICULO
+       WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT_TP := 0; 
+    END;
+  
+    IF NVL(V_COUNT_TP, 0) <= 0 THEN
+      O_MENSAGEM := 'O tipo de veiculo ' || I_CD_TIPO ||
+                    ' não está cadastrado. Verifique';
+      RAISE E_GERAL;
+    END IF;
+  
+    /*BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT
+        FROM CARRO
+       WHERE CARRO.NR_PLACA = I_NR_PLACA;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT := 0;
+    END;*/
+  
+    IF NVL(I_DT_ANO, 0) > 2025 THEN
+      O_MENSAGEM := 'O ano do carro não pode ser superior ao ano seguinte ao atual!';
+      RAISE E_GERAL;
+    END IF;
+    
+    BEGIN
+      INSERT INTO CARRO
+        (NR_PLACA,
+         DS_COR,
+         DS_MARCA,
+         DT_ANO,
+         VL_KM,
+         CD_TIPO,
+         NM_MODELO,
+         DT_RECORD)
+      VALUES
+        (I_NR_PLACA,
+         I_DS_COR,
+         I_DS_MARCA,
+         I_DT_ANO,
+         NVL(I_VL_KM,0),
+         I_CD_TIPO,
+         I_NM_MODELO,
+         I_DT_RECORD);
+    EXCEPTION
+      WHEN DUP_VAL_ON_INDEX THEN
+        BEGIN
+          UPDATE CARRO
+             SET CARRO.DS_COR    = I_DS_COR,
+                 CARRO.DS_MARCA  = I_DS_MARCA,
+                 CARRO.DT_ANO    = I_DT_ANO,
+                 CARRO.VL_KM     = NVL(I_VL_KM,0),
+                 CARRO.CD_TIPO   = I_CD_TIPO,
+                 CARRO.NM_MODELO = I_NM_MODELO,
+                 CARRO.DT_RECORD = SYSDATE
+           WHERE CARRO.NR_PLACA  = I_NR_PLACA; 
+         EXCEPTION
+           WHEN OTHERS THEN
+             O_MENSAGEM := 'Erro ao atualizar dados do carro - '||SQLERRM;
+             RAISE E_GERAL;
+         END;
+    END;
+    
+  
+    COMMIT;
+    O_MENSAGEM := 'Carro cadastrado com sucesso!';
+  
+  EXCEPTION
+    WHEN E_GERAL THEN
+      ROLLBACK;
+      O_MENSAGEM := '[INSERE_CARRO]: ' || O_MENSAGEM;
+    
+    WHEN OTHERS THEN
+      ROLLBACK;
+      O_MENSAGEM := '[INSERE_CARRO]: Ocorreu um erro ao inserir o CARRO.' ||
+                    SQLERRM;
+    
+  END INSERE_CARRO;
+
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  ------------------------------------------------------------
+  PROCEDURE INSERE_TIPOVEICULO(I_CD_TIPO   IN NUMBER,
+                               I_DS_TIPO   IN VARCHAR2,
+                               I_QT_PORTAS IN NUMBER,
+                               I_QT_RODAS  IN NUMBER,
+                               I_DT_RECORD IN DATE DEFAULT SYSDATE,
+                               O_MENSAGEM  OUT VARCHAR2) IS
+  
+    V_COUNT        NUMBER;
+    V_SEQUENCIAL   NUMBER;
+    E_GERAL        EXCEPTION;
+  
+  BEGIN
+    
+    BEGIN
+      SELECT COUNT(*)
+        INTO V_COUNT
+        FROM TIPOVEICULO
+       WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_COUNT := 0;
+    END;
+  
+    IF NVL(V_COUNT, 0) = 0 THEN
+      BEGIN
+        SELECT MAX(CD_TIPO)
+          INTO V_SEQUENCIAL
+          FROM TIPOVEICULO;  
+      EXCEPTION
+        WHEN OTHERS THEN
+          V_SEQUENCIAL := 0;
+      END;
+      
+      V_SEQUENCIAL := V_SEQUENCIAL + 1;
+      
+      INSERT INTO TIPOVEICULO
+        (CD_TIPO, DS_TIPO, QT_PORTAS, QT_RODAS, DT_RECORD)
+      VALUES
+        (V_SEQUENCIAL, I_DS_TIPO, I_QT_PORTAS, I_QT_RODAS, I_DT_RECORD);
+    
+    ELSE
+      RAISE E_GERAL;
+    END IF;
+  
+    COMMIT;
+    O_MENSAGEM := 'Tipo de veiculo cadastrado com sucesso!';
+  
+  EXCEPTION
+    WHEN E_GERAL THEN
+      ROLLBACK;
+      O_MENSAGEM := '[INSERE_TIPOVEICULO]: Já existe um tipo de veiculo com o código ' ||
+                    I_CD_TIPO || ' cadastrado. Verifique.';
+    
+    WHEN OTHERS THEN
+      ROLLBACK;
+      O_MENSAGEM := '[INSERE_TIPOVEICULO]: Ocorreu um erro ao inserir o CARRO.' ||
+                    SQLERRM;
+    
+  END INSERE_TIPOVEICULO;
+
+END PACK_CARRO;
