@@ -1,10 +1,9 @@
 CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
- 
+
   PROCEDURE EXCLUI_TIPOVEICULO(I_CD_TIPO  IN NUMBER,
                                O_MENSAGEM OUT VARCHAR2) IS
-    E_GERAL    EXCEPTION;
-  V_COUNT    NUMBER;  
-
+    E_GERAL EXCEPTION;
+    V_COUNT NUMBER;
   
   BEGIN
     /*VALIDAÇÃO DE EXISTÊNCIA DO TIPO DE VEICULO*/
@@ -106,10 +105,9 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
                          I_DT_RECORD IN DATE DEFAULT SYSDATE,
                          O_MENSAGEM  OUT VARCHAR2) IS
   
-    E_GERAL    EXCEPTION;
+    E_GERAL EXCEPTION;
     --V_COUNT    NUMBER;
     V_COUNT_TP NUMBER;
-    
   
   BEGIN
     /*VALIDAÇÃO COR*/
@@ -117,41 +115,41 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
       O_MENSAGEM := 'A cor do veiculo precisa ser preenchida.';
       RAISE E_GERAL;
     END IF;
-    
+  
     /*VALIDAÇÃO MARCA*/
     IF I_DS_MARCA IS NULL THEN
       O_MENSAGEM := 'A marca do veiculo precisa ser preenchida.';
       RAISE E_GERAL;
     END IF;
-    
+  
     /*VALIDAÇÃO ANO*/
     IF I_DT_ANO IS NULL THEN
       O_MENSAGEM := 'O ano do veiculo precisa ser preenchido.';
       RAISE E_GERAL;
     END IF;
-    
+  
     /*VALIDAÇÃO TIpo de Veiculo*/
     IF I_CD_TIPO IS NULL THEN
       O_MENSAGEM := 'O tipo do veiculo precisa ser preenchido.';
       RAISE E_GERAL;
     END IF;
-    
+  
     /*VALIDAÇÃO TIpo de Veiculo*/
     IF I_NM_MODELO IS NULL THEN
       O_MENSAGEM := 'O modelo do veiculo precisa ser preenchido.';
       RAISE E_GERAL;
     END IF;
-    
+  
     /*VALIDAÇÃO DE TIPO DE VEICULO*/
-    BEGIN
+    /*BEGIN
       SELECT COUNT(*)
         INTO V_COUNT_TP
         FROM TIPOVEICULO
        WHERE TIPOVEICULO.CD_TIPO = I_CD_TIPO;
     EXCEPTION
       WHEN OTHERS THEN
-        V_COUNT_TP := 0; 
-    END;
+        V_COUNT_TP := 0;
+    END;*/
   
     IF NVL(V_COUNT_TP, 0) <= 0 THEN
       O_MENSAGEM := 'O tipo de veiculo ' || I_CD_TIPO ||
@@ -173,7 +171,7 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
       O_MENSAGEM := 'O ano do carro não pode ser superior ao ano seguinte ao atual!';
       RAISE E_GERAL;
     END IF;
-    
+  
     BEGIN
       INSERT INTO CARRO
         (NR_PLACA,
@@ -189,7 +187,7 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
          I_DS_COR,
          I_DS_MARCA,
          I_DT_ANO,
-         NVL(I_VL_KM,0),
+         NVL(I_VL_KM, 0),
          I_CD_TIPO,
          I_NM_MODELO,
          I_DT_RECORD);
@@ -200,21 +198,20 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
              SET CARRO.DS_COR    = I_DS_COR,
                  CARRO.DS_MARCA  = I_DS_MARCA,
                  CARRO.DT_ANO    = I_DT_ANO,
-                 CARRO.VL_KM     = NVL(I_VL_KM,0),
+                 CARRO.VL_KM     = NVL(I_VL_KM, 0),
                  CARRO.CD_TIPO   = I_CD_TIPO,
                  CARRO.NM_MODELO = I_NM_MODELO,
                  CARRO.DT_RECORD = SYSDATE
-           WHERE CARRO.NR_PLACA  = I_NR_PLACA; 
-         EXCEPTION
-           WHEN OTHERS THEN
-             O_MENSAGEM := 'Erro ao atualizar dados do carro - '||SQLERRM;
-             RAISE E_GERAL;
-         END;
+           WHERE CARRO.NR_PLACA = I_NR_PLACA;
+        EXCEPTION
+          WHEN OTHERS THEN
+            O_MENSAGEM := 'Erro ao atualizar dados do carro - ' || SQLERRM;
+            RAISE E_GERAL;
+        END;
     END;
-    
   
     COMMIT;
-    O_MENSAGEM := 'Carro cadastrado com sucesso!';
+    --O_MENSAGEM := 'Carro cadastrado com sucesso!';
   
   EXCEPTION
     WHEN E_GERAL THEN
@@ -238,12 +235,12 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
                                I_DT_RECORD IN DATE DEFAULT SYSDATE,
                                O_MENSAGEM  OUT VARCHAR2) IS
   
-    V_COUNT        NUMBER;
-    V_SEQUENCIAL   NUMBER;
-    E_GERAL        EXCEPTION;
+    V_COUNT      NUMBER;
+    V_SEQUENCIAL NUMBER;
+    E_GERAL      EXCEPTION;
   
   BEGIN
-    
+    /*Verifica se o tipo de veiculo já está cadastrado*/
     BEGIN
       SELECT COUNT(*)
         INTO V_COUNT
@@ -253,24 +250,37 @@ CREATE OR REPLACE PACKAGE BODY PACK_CARRO IS
       WHEN OTHERS THEN
         V_COUNT := 0;
     END;
-  
+    /*Busca/Gera o sequencial para inserção*/
     IF NVL(V_COUNT, 0) = 0 THEN
       BEGIN
-        SELECT MAX(CD_TIPO)
-          INTO V_SEQUENCIAL
-          FROM TIPOVEICULO;  
+        SELECT MAX(CD_TIPO) 
+          INTO V_SEQUENCIAL 
+          FROM TIPOVEICULO;
       EXCEPTION
         WHEN OTHERS THEN
           V_SEQUENCIAL := 0;
       END;
-      
+    
       V_SEQUENCIAL := V_SEQUENCIAL + 1;
-      
+    
       INSERT INTO TIPOVEICULO
         (CD_TIPO, DS_TIPO, QT_PORTAS, QT_RODAS, DT_RECORD)
       VALUES
-        (V_SEQUENCIAL, I_DS_TIPO, I_QT_PORTAS, I_QT_RODAS, I_DT_RECORD);
+        (NVL(I_CD_TIPO,V_SEQUENCIAL), I_DS_TIPO, I_QT_PORTAS, I_QT_RODAS, I_DT_RECORD);
     
+    ELSIF V_COUNT = 1 THEN
+      BEGIN
+        UPDATE TIPOVEICULO
+           SET TIPOVEICULO.DS_TIPO   = NVL(I_DS_TIPO,DS_TIPO),
+               TIPOVEICULO.QT_PORTAS = NVL(I_QT_PORTAS,QT_PORTAS),
+               TIPOVEICULO.QT_RODAS  = NVL(I_QT_RODAS,QT_RODAS),
+               TIPOVEICULO.DT_RECORD = SYSDATE
+         WHERE TIPOVEICULO.CD_TIPO   = I_CD_TIPO;
+      EXCEPTION
+        WHEN OTHERS THEN
+          O_MENSAGEM := 'Erro ao atualizar dados da TIPOVEICULO.';
+          RAISE E_GERAL;
+      END;
     ELSE
       RAISE E_GERAL;
     END IF;
