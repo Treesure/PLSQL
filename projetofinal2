@@ -1,0 +1,77 @@
+Criar um sistema para registro de vendas. O sistema deverá possuir os seguintes cadastros:
+
+ Cliente
+ Produto
+ Venda
+
+Cada venda pode registrar a venda de mais de um produto, e o valor total deve ser coerente com a soma dos valores dos itens, bem como as quantidades.
+
+O sistema deverá permitir cadastrar, alterar e excluir em todos os cadastros.
+O sistema deverá efetuar todas as validações para garantir que as informações inseridas sejam consistentes. Como por exemplo: informações obrigatórias, número de caracteres das informações (quando possível), 
+nos casos de relacionamento entre cadastros garantir que o item pai esteja cadastrado.
+O sistema também deverá permitir visualizar os itens cadastrados.
+
+
+Data de venda inicial e final;
+Código do Produto;
+CPF Cliente;
+Valor total.
+Podem ser adicionadas outras opções de filtro além destas obrigatórias.
+
+
+Na tela de cadastro da venda, os campos de cliente e produto deverão possuir LOV, e gatilho WHEN-VALIDATE-ITEM validando se o código/cpf informado está cadastrado e carregando a descrição/nome.
+
+O desenvolvimento deverá seguir os padrões e convenções de desenvolvimento apresentados durante o curso. Como nomeclatura de varíáveis, indentação, mensagens, tratamentos de erro, etc.
+
+Espera-se receber na entrega do trabalho o código fonte em PL/SQL da package de banco de dados e o código fonte do Oracle Forms. Criação das tabelas: 
+
+
+
+CREATE TABLE CLIENTE(
+  NR_CPF        VARCHAR2(11),
+  NM_CLIENTE    VARCHAR2(100),
+  DT_NASCIMENTO DATE,
+  CONSTRAINT PKCLIENTE PRIMARY KEY (NR_CPF)
+); 
+
+CREATE TABLE PRODUTO(
+  CD_PRODUTO     NUMBER(10),
+  DS_PRODUTO     VARCHAR2(100),
+  VL_UNITARIO    NUMBER(15,2),
+  CONSTRAINT PKPRODUTO PRIMARY KEY (CD_PRODUTO)
+); 
+
+CREATE TABLE VENDA(
+  CD_VENDA       NUMBER(15),
+  CD_PRODUTO     NUMBER(10),
+  VL_TOTAL       NUMBER(15,2),
+  QT_TOTAL       NUMBER(15,2),
+  NR_CPFCLIENTE  VARCHAR2(11),
+  DT_VENDA       DATE,
+  CONSTRAINT PKVENDA PRIMARY KEY (CD_VENDA),
+  CONSTRAINT FKVENDA_PRODUTO FOREIGN KEY (CD_PRODUTO) REFERENCES PRODUTO (CD_PRODUTO),
+  CONSTRAINT FKVENDA_CLIENTE FOREIGN KEY (NR_CPFCLIENTE) REFERENCES CLIENTE (NR_CPF)
+);
+
+CREATE TABLE ITEMVENDA(
+CD_VENDA        NUMBER(15),
+CD_PRODUTO      NUMBER(10),
+VL_UNITPROD     NUMBER(15,2),
+QT_ADQUIRIDA    NUMBER(15,2),
+DT_RECORD       DATE,
+CONSTRAINT PKITEMVENDA PRIMARY KEY (CD_VENDA, CD_PRODUTO),
+CONSTRAINT FKITEMVENDA_PRODUTO FOREIGN KEY (CD_PRODUTO) REFERENCES PRODUTO (CD_PRODUTO),
+CONSTRAINT FKITEMVENDA_VENDA FOREIGN KEY (CD_VENDA) REFERENCES VENDA (CD_VENDA)
+);
+
+Dicas para um bom projeto:
+
+ Realizar testes exploratórios, isto é, testar N campos de N formas, inclusive com utilização "incorreta" do programa;
+ Solicitar para outras pessoas testarem o programa. Facilita a identificação de erros;
+ Pense que o programa é um produto seu e você precisa vendê-lo. Qual será o diferencial dele e como irá apresentá-lo?
+ 3 pilares de um projeto: Precisão, Estética e Usabilidade.
+Precisão - O programa funciona da maneira que deveria?
+
+Estética - O programa está agradável visualmente?
+
+Usabilidade - O programa é prático para se utiizar, considerando que o usuário irá utilizá-los centenas de vezes diariamente?
