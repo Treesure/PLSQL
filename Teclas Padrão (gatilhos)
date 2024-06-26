@@ -1,32 +1,32 @@
 
 Gatilho (Trigger)	Ação	Tecla no Windows
 
-Key-CLRBLK	Limpar Bloco (Clear Block)	SHIFT + F5
-Key-CLRFRM	Limpar Form (Clear Form)	SHIFT + F7
-Key-CLRREC	Limpar Registro (Clear Record)	SHIFT + F4
-Key-COMMIT	Salvar (Save) ou Aceitar (Accept)	F10
-Key-CQUERY	Conta Registros Coincidentes (Count Query Hits)	SHIFT + F2
-Key-CREREC	Incluir Registro (Insert Record)	F6
-Key-DELREC	Remover Registro (Delete Record)	SHIFT + F6
-Key-DOWN	Navegar Para Baixo (Down)	Seta Para Baixo ou CTRL + I
-Key-DUP-ITEM	Duplicar Item (Duplicate Item)	F3
-Key-DUPREC	Duplicar Registro (Duplicate Record)	F4
-Key-EDIT	Editar (Edit)	CTRL + E
-Key-ENTQRY	Entrar Consulta (Enter Query)	F7
-Key-EXEQRY	Executar Consulta (Execute Query)	F8
-Key-EXIT	Sair (Exit)	CTRL + Q
-Key-HELP	Ajuda (Help)	F1
-Key-LISTVAL	Lov (List of Values)	F9
-Key-MENU	Menu de Blocos (Block Menu)	F5
-Key-NXTBLK	Próximo Bloco (Next Block)	 
-Key-NXT-ITEM	Próximo Item (Next Item)	Tab ou CTRL + Tab
-Key-NXTKEY	Próxima PK (Next Primary Key)	SHIFT + F3
-Key-NXTREC	Próximo Registro (Next Record)	SHIFT + Seta Para Baixo
-Key-NXTSET	Próximo conjunto de Registros (Next Set of Records)	CTRL + >
-Key-PRINT	Imprimir (Print)	SHIFT + F8
-Key-PRVBLK	Bloco Anterior (Previous Block)	 
-Key-PRV-ITEM	Item Anterior (Previous Item)	SHIFT + Tab ou SHIFT + CTRL + Tab
-Key-PRVREC	Registro Anterior (Previous Record)	SHIFT + Seta Para Cima
-Key-SCDOMN	Rolar a Tela Para Baixo (Scroll Down)	Page Down
-Key-SCRUP	Rolar a Tela Para Cima (Scroll Up)	Page UP
-Key-UP	Navegar para Cima (UP)	Seta para Cima ou CTRL + P
+Key-CLRBLK	     Limpar Bloco (Clear Block)	                          SHIFT + F5
+Key-CLRFRM	     Limpar Form (Clear Form)	                            SHIFT + F7
+Key-CLRREC	     Limpar Registro (Clear Record)	                      SHIFT + F4
+Key-COMMIT	     Salvar (Save) ou Aceitar (Accept)	                  F10
+Key-CQUERY	     Conta Registros Coincidentes (Count Query Hits)	    SHIFT + F2
+Key-CREREC	     Incluir Registro (Insert Record)                    	F6
+Key-DELREC	     Remover Registro (Delete Record)	                    SHIFT + F6
+Key-DOWN	       Navegar Para Baixo (Down)	                          Seta Para Baixo ou CTRL + I
+Key-DUP-ITEM	   Duplicar Item (Duplicate Item)	                      F3
+Key-DUPREC	     Duplicar Registro (Duplicate Record)                	F4
+Key-EDIT	       Editar (Edit)	                                      CTRL + E
+Key-ENTQRY	     Entrar Consulta (Enter Query)                      	F7
+Key-EXEQRY	     Executar Consulta (Execute Query)                  	F8
+Key-EXIT	       Sair (Exit)	                                        CTRL + Q
+Key-HELP	       Ajuda (Help)	                                        F1
+Key-LISTVAL	     Lov (List of Values)	                                F9
+Key-MENU	       Menu de Blocos (Block Menu)	                        F5
+Key-NXTBLK	     Próximo Bloco (Next Block)	 
+Key-NXT-ITEM	   Próximo Item (Next Item)	                            Tab ou CTRL + Tab
+Key-NXTKEY	     Próxima PK (Next Primary Key)	                      SHIFT + F3
+Key-NXTREC	     Próximo Registro (Next Record)	                      SHIFT + Seta Para Baixo
+Key-NXTSET	     Próximo conjunto de Registros (Next Set of Records)	CTRL + >
+Key-PRINT	       Imprimir (Print)                                    	SHIFT + F8
+Key-PRVBLK	     Bloco Anterior (Previous Block)	 
+Key-PRV-ITEM	   Item Anterior (Previous Item)	                      SHIFT + Tab ou SHIFT + CTRL + Tab
+Key-PRVREC	     Registro Anterior (Previous Record)	                SHIFT + Seta Para Cima
+Key-SCDOMN	     Rolar a Tela Para Baixo (Scroll Down)	              Page Down
+Key-SCRUP	       Rolar a Tela Para Cima (Scroll Up)	                  Page UP
+Key-UP	         Navegar para Cima (UP)	                              Seta para Cima ou CTRL + P
